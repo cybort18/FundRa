@@ -2,10 +2,11 @@ import { ArrowDown } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { About } from "@/components/landing/About";
+import { RealityCheck } from "@/components/landing/RealityCheck";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#030014] text-[#f8fafc] flex flex-col font-sans selection:bg-[#06b6d4]/30">
+    <main className="relative min-h-screen bg-[#030014] text-[#f8fafc] flex flex-col font-sans">
       
       {/* --- VIBRANT AURA GRAINY GRADIENT BACKGROUND --- */}
       {/* Base deep background */}
@@ -39,6 +40,9 @@ export default function Home() {
 
       {/* --- ABOUT SECTION --- */}
       <About />
+
+      {/* --- REALITY CHECK SECTION --- */}
+      <RealityCheck />
 
     </main>
   );

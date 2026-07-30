@@ -1,8 +1,19 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Menu, Sparkles } from "lucide-react";
 
 export function Header() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
-    <header className="relative z-20 flex justify-between items-start p-8 md:px-12 w-full">
+    <header className={`relative z-20 flex justify-between items-start p-8 md:px-12 w-full transition-all duration-[1200ms] ease-out transform ${
+      isMounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+    }`}>
       {/* Left: Empty for balance */}
       <div className="hidden md:flex w-32" />
 

@@ -144,4 +144,7 @@
   html {
     @apply font-sans;
   }
+  ::selection {
+    @apply bg-[#38bdf8] text-[#030014];
+  }
 }
