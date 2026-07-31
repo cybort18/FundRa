@@ -2,7 +2,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function RealityCheck() {
   return (
-    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48 border-t border-white/5">
+    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48">
       
       {/* Header section with refined, minimal layout */}
       <div className="flex flex-col items-center mb-24 md:mb-32">

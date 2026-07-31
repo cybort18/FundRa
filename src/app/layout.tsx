@@ -40,6 +40,8 @@ const syncopate = Syncopate({
   weight: ["400", "700"],
 });
 
+import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+
 export const metadata: Metadata = {
   title: "FundRa | Crypto-Native Crowdfunding",
   description: "FundRa Protocol V2 - The First Crypto-Native Crowdfunding Launchpad",
@@ -55,7 +57,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable} ${spaceGrotesk.variable} ${syncopate.variable} antialiased`}
     >
-      <body className="min-h-screen flex flex-col font-sans bg-[#070514] text-[#f8fafc] overflow-x-hidden">{children}</body>
+      <body className="min-h-screen flex flex-col font-sans bg-[#030014] text-[#f8fafc] overflow-x-hidden">
+        <SmoothScrollProvider>
+          {children}
+        </SmoothScrollProvider>
+      </body>
     </html>
   );
 }

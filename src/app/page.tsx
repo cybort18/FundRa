@@ -12,17 +12,17 @@ export default function Home() {
       {/* Base deep background */}
       <div className="absolute inset-0 bg-[#030014]" />
       
-      {/* Dynamic Glowing Mesh Orbs (Refined Sapphire-Teal-Emerald Vibe) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] max-w-[800px] rounded-full bg-gradient-to-tr from-[#4f46e5] to-[#3b82f6] opacity-30 blur-[140px] pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-[-10%] left-[10%] w-[60vw] h-[60vw] max-w-[700px] rounded-full bg-gradient-to-br from-[#0d9488] to-[#06b6d4] opacity-20 blur-[110px] pointer-events-none mix-blend-screen" />
-      <div className="absolute top-[20%] right-[-10%] w-[65vw] h-[65vw] max-w-[800px] rounded-full bg-gradient-to-bl from-[#6366f1] to-[#14b8a6] opacity-25 blur-[140px] pointer-events-none mix-blend-screen" />
-      <div className="absolute bottom-[10%] right-[30%] w-[40vw] h-[40vw] max-w-[500px] rounded-full bg-gradient-to-tr from-[#a855f7] to-[#ec4899] opacity-12 blur-[100px] pointer-events-none mix-blend-screen" />
+      {/* Dynamic Glowing Mesh Orbs (Refined Sapphire-Teal-Emerald Vibe + Slow Floating Animation) */}
+      <div className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] max-w-[800px] rounded-full bg-gradient-to-tr from-[#4f46e5] to-[#3b82f6] opacity-30 blur-[140px] pointer-events-none mix-blend-screen animate-float-slow" />
+      <div className="absolute bottom-[-10%] left-[10%] w-[60vw] h-[60vw] max-w-[700px] rounded-full bg-gradient-to-br from-[#0d9488] to-[#06b6d4] opacity-20 blur-[110px] pointer-events-none mix-blend-screen animate-float-slower" />
+      <div className="absolute top-[20%] right-[-10%] w-[65vw] h-[65vw] max-w-[800px] rounded-full bg-gradient-to-bl from-[#6366f1] to-[#14b8a6] opacity-25 blur-[140px] pointer-events-none mix-blend-screen animate-float-slowest" />
+      <div className="absolute bottom-[10%] right-[30%] w-[40vw] h-[40vw] max-w-[500px] rounded-full bg-gradient-to-tr from-[#a855f7] to-[#ec4899] opacity-12 blur-[100px] pointer-events-none mix-blend-screen animate-float-slow" />
 
-      {/* High-contrast coarse grain texture overlay */}
+      {/* Ultra-fine, velvety grain texture overlay (Matching reference image - increased visibility) */}
       <div 
-        className="pointer-events-none absolute inset-0 z-0 mix-blend-overlay opacity-[0.38]"
+        className="pointer-events-none absolute inset-0 z-0 mix-blend-overlay opacity-[0.22]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.99' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}
       />
 

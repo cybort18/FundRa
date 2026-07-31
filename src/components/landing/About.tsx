@@ -2,7 +2,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function About() {
   return (
-    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center border-t border-white/5">
+    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
       {/* Left Column: Title with immediate scroll reveal */}
       <div className="md:col-span-7">
         <ScrollReveal>

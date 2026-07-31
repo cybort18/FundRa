@@ -52,6 +52,9 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --animate-fade-in: fade-in 1s ease-out;
+  --animate-float-slow: float-slow 12s ease-in-out infinite;
+  --animate-float-slower: float-slower 16s ease-in-out infinite;
+  --animate-float-slowest: float-slowest 20s ease-in-out infinite;
 }
 
 @keyframes fade-in {
@@ -62,6 +65,33 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-80px) translateX(40px) scale(1.15);
+  }
+}
+
+@keyframes float-slower {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  50% {
+    transform: translateY(60px) translateX(-70px) scale(0.85);
+  }
+}
+
+@keyframes float-slowest {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-50px) translateX(-80px) scale(1.1);
   }
 }
 
@@ -143,8 +173,37 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
   ::selection {
     @apply bg-[#38bdf8] text-[#030014];
   }
+  
+  /* Hide scrollbars globally but preserve scroll mechanics */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  html, body {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+/* Lenis Smooth Scroll Helper Styles */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
