@@ -28,7 +28,9 @@ This frontend prototype is built with modern, high-performance web technologies:
 
 - **Framework:** Next.js (App Router)
 - **Styling:** Tailwind CSS v4 (incorporating a custom Grainy Gradient and Frosted Glassmorphism design system)
+- **Smooth Scroll:** Lenis (Studio Freight) for inertial, fluid scrolling
 - **Language:** TypeScript
+- **Web3 Integration:** Zero-dependency custom EVM Wallet Connection Context (MetaMask & Bitget Wallet)
 - **UI Components:** Shadcn UI & Lucide Icons
 
 ---
@@ -69,13 +71,28 @@ Open [http://localhost:3000](http://localhost:3000) (or the port specified in yo
 ```
 src/
 ├── app/
-│   ├── globals.css      # Core styles, tailwind v4 overrides, and Grainy Gradient animations
-│   ├── layout.tsx       # Root layout loaded with display fonts (Cormorant Garamond, Space Grotesk, etc.)
-│   └── page.tsx         # Interactive Landing Page (Hero and About sections)
+│   ├── globals.css      # Core styles, Tailwind v4 base layer, and floating mesh keyframe animations
+│   ├── layout.tsx       # Root layout wrapping global providers (WalletProvider, SmoothScrollProvider)
+│   └── page.tsx         # Home layout rendering Hero, About, Reality Check, and Pillars sections
 ├── components/
-│   └── ui/              # Shadcn components (Button, etc.)
-└── lib/
-    └── utils.ts         # Tailwind merger and conditional class helper utilities
+│   ├── landing/
+│   │   ├── Header.tsx       # Navigation bar with dynamic Web3 Connection states
+│   │   ├── Hero.tsx         # Displays displaying display-fonts titles and ScrollReveal components
+│   │   ├── About.tsx        # Engineered Trust details in split-screen columns
+│   │   ├── RealityCheck.tsx # Pure typographic comparison cardless risk layout
+│   │   └── Pillars.tsx      # Core mechanisms represented in an interactive list (Focus Mode)
+│   ├── providers/
+│   │   └── SmoothScrollProvider.tsx # Client-side Lenis scroll initialization
+│   └── ui/
+│       ├── button.tsx       # Custom Shadcn buttons
+│       ├── ScrollReveal.tsx # IntersectionObserver-backed staggered entrance animation wrapper
+│       └── WalletModal.tsx  # Redesigned side-by-side card Web3 connection selection dialog
+├── context/
+│   └── WalletContext.tsx    # EIP-1102 / EIP-1193 Web3 Wallet Provider (requestPermissions Account Picker)
+├── lib/
+│   └── utils.ts         # Tailwind merger and conditional class helper utilities
+└── types/
+    └── global.d.ts      # Window.ethereum type extensions
 ```
 
 ---

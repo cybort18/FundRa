@@ -41,6 +41,7 @@ const syncopate = Syncopate({
 });
 
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { WalletProvider } from "@/context/WalletContext";
 
 export const metadata: Metadata = {
   title: "FundRa | Crypto-Native Crowdfunding",
@@ -58,9 +59,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable} ${spaceGrotesk.variable} ${syncopate.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col font-sans bg-[#030014] text-[#f8fafc] overflow-x-hidden">
-        <SmoothScrollProvider>
-          {children}
-        </SmoothScrollProvider>
+        <WalletProvider>
+          <SmoothScrollProvider>
+            {children}
+          </SmoothScrollProvider>
+        </WalletProvider>
       </body>
     </html>
   );
