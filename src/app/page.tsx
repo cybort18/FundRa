@@ -3,6 +3,7 @@ import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { About } from "@/components/landing/About";
 import { RealityCheck } from "@/components/landing/RealityCheck";
+import { Pillars } from "@/components/landing/Pillars";
 
 export default function Home() {
   return (
@@ -43,6 +44,9 @@ export default function Home() {
 
       {/* --- REALITY CHECK SECTION --- */}
       <RealityCheck />
+
+      {/* --- PILLARS SECTION --- */}
+      <Pillars />
 
     </main>
   );

@@ -11,11 +11,11 @@ export function Header() {
   }, []);
 
   return (
-    <header className={`relative z-20 flex justify-between items-start p-8 md:px-12 w-full transition-all duration-[1200ms] ease-out transform ${
+    <header className={`relative z-20 flex justify-between items-center p-8 md:px-12 w-full transition-all duration-[1200ms] ease-out transform ${
       isMounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
     }`}>
-      {/* Left: Empty for balance */}
-      <div className="hidden md:flex w-32" />
+      {/* Left: Flex helper to balance logo positioning */}
+      <div className="flex-1" />
 
       {/* Center: Abstract Geometric Logo */}
       <div className="flex flex-col items-center justify-center">
@@ -27,13 +27,9 @@ export function Header() {
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-6 text-sm font-medium tracking-wider w-32 justify-end">
-        <button className="hidden md:block hover:text-white transition-colors uppercase">
+      <div className="flex-1 flex justify-end">
+        <button className="px-6 py-2.5 bg-[#0f2147] hover:bg-[#163066] border border-white/5 text-white font-semibold rounded-2xl text-sm transition-all duration-300 whitespace-nowrap shadow-sm hover:shadow-[0_0_20px_rgba(22,48,102,0.3)] active:scale-95">
           Connect Wallet
-        </button>
-        <button className="flex items-center gap-2 hover:text-white transition-colors uppercase group">
-          Menu
-          <Menu className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
         </button>
       </div>
     </header>
