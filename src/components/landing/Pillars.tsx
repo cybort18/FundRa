@@ -25,15 +25,15 @@ export function Pillars() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48">
+    <section id="pillars" className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48">
       
       {/* Header section with minimal typography */}
       <div className="flex flex-col items-start mb-20 md:mb-28">
         <ScrollReveal>
-          <span className="text-xs uppercase tracking-[0.3em] text-[#38bdf8] mb-4 block font-medium">Core Mechanisms</span>
+          <span className="text-xs uppercase tracking-[0.3em] text-fundra-accent mb-4 block font-medium">Core Mechanisms</span>
         </ScrollReveal>
         <ScrollReveal delay={150}>
-          <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl text-[#f8fafc] tracking-wide">
+          <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl text-fundra-text tracking-wide">
             The Protocol Pillars
           </h2>
         </ScrollReveal>
@@ -61,14 +61,14 @@ export function Pillars() {
             >
               {/* Number Column */}
               <div className="md:col-span-2 font-mono text-2xl md:text-3xl text-zinc-500 tracking-wider">
-                <span className={`transition-colors duration-500 ${isHovered ? "text-[#38bdf8]" : ""}`}>
+                <span className={`transition-colors duration-500 ${isHovered ? "text-fundra-accent" : ""}`}>
                   {item.num}
                 </span>
               </div>
 
               {/* Title Column */}
-              <div className="md:col-span-4 font-cormorant text-3xl md:text-4xl text-[#f8fafc] tracking-wide">
-                <h3 className={`transition-all duration-500 ${isHovered ? "text-[#38bdf8] translate-x-2" : "translate-x-0"}`}>
+              <div className="md:col-span-4 font-cormorant text-3xl md:text-4xl text-fundra-text tracking-wide">
+                <h3 className={`transition-all duration-500 ${isHovered ? "text-fundra-accent translate-x-2" : "translate-x-0"}`}>
                   {item.title}
                 </h3>
               </div>

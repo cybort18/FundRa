@@ -7,11 +7,11 @@ import { Pillars } from "@/components/landing/Pillars";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#030014] text-[#f8fafc] flex flex-col font-sans">
+    <main className="relative min-h-screen flex flex-col font-sans">
       
       {/* --- VIBRANT AURA GRAINY GRADIENT BACKGROUND --- */}
       {/* Base deep background */}
-      <div className="absolute inset-0 bg-[#030014]" />
+      <div className="absolute inset-0 bg-fundra-bg" />
       
       {/* Dynamic Glowing Mesh Orbs (Refined Sapphire-Teal-Emerald Vibe + Slow Floating Animation) */}
       <div className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] max-w-[800px] rounded-full bg-gradient-to-tr from-[#4f46e5] to-[#3b82f6] opacity-30 blur-[140px] pointer-events-none mix-blend-screen animate-float-slow" />
@@ -34,10 +34,7 @@ export default function Home() {
       <Hero />
 
       {/* --- SCROLL INDICATOR --- */}
-      <div className="relative z-10 flex flex-col items-center pb-24 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
-        <span className="text-xs uppercase tracking-[0.3em] mb-4 text-[#94a3b8]">Scroll Down</span>
-        <ArrowDown className="w-4 h-4 text-[#94a3b8] animate-bounce" />
-      </div>
+      <ScrollIndicator />
 
       {/* --- ABOUT SECTION --- */}
       <About />
@@ -49,5 +46,20 @@ export default function Home() {
       <Pillars />
 
     </main>
+  );
+}
+
+/* Client component for scroll indicator with onClick handler */
+function ScrollIndicator() {
+  return (
+    <div
+      className="relative z-10 flex flex-col items-center pb-24 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+      role="button"
+      tabIndex={0}
+      aria-label="Scroll to About section"
+    >
+      <span className="text-xs uppercase tracking-[0.3em] mb-4 text-fundra-muted">Scroll Down</span>
+      <ArrowDown className="w-4 h-4 text-fundra-muted animate-bounce" />
+    </div>
   );
 }

@@ -2,15 +2,15 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function RealityCheck() {
   return (
-    <section className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48">
+    <section id="reality-check" className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 py-32 md:py-48">
       
       {/* Header section with refined, minimal layout */}
       <div className="flex flex-col items-center mb-24 md:mb-32">
         <ScrollReveal>
-          <span className="text-xs uppercase tracking-[0.3em] text-[#38bdf8] mb-4 block font-medium">Comparative Analysis</span>
+          <span className="text-xs uppercase tracking-[0.3em] text-fundra-accent mb-4 block font-medium">Comparative Analysis</span>
         </ScrollReveal>
         <ScrollReveal delay={150}>
-          <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl text-center text-[#f8fafc] tracking-wide">
+          <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl text-center text-fundra-text tracking-wide">
             The Reality Check
           </h2>
         </ScrollReveal>
@@ -52,13 +52,13 @@ export function RealityCheck() {
         <div className="flex flex-col justify-between pl-0 md:pl-12">
           <ScrollReveal delay={200} className="flex flex-col h-full justify-between">
             <div className="space-y-8">
-              <span className="text-xs uppercase tracking-[0.25em] text-[#38bdf8] font-medium block">The FundRa Paradigm</span>
+              <span className="text-xs uppercase tracking-[0.25em] text-fundra-accent font-medium block">The FundRa Paradigm</span>
               
               <div className="space-y-3">
-                <span className="font-cormorant text-6xl sm:text-7xl md:text-8xl text-[#f8fafc] font-light block leading-none">
-                  $1,000<span className="text-3xl sm:text-4xl md:text-5xl text-[#38bdf8] font-sans font-light">.00 + Yield</span>
+                <span className="font-cormorant text-6xl sm:text-7xl md:text-8xl text-fundra-text font-light block leading-none">
+                  $1,000<span className="text-3xl sm:text-4xl md:text-5xl text-fundra-accent font-sans font-light">.00 + Yield</span>
                 </span>
-                <span className="text-xs font-mono tracking-widest text-[#38bdf8]/70 uppercase block">Sovereign Escrow</span>
+                <span className="text-xs font-mono tracking-widest text-fundra-accent/70 uppercase block">Sovereign Escrow</span>
               </div>
               
               <p className="text-zinc-300 text-base sm:text-lg font-light leading-relaxed max-w-md">
@@ -68,8 +68,8 @@ export function RealityCheck() {
             </div>
             
             <div className="mt-16 pt-6 border-t border-white/5 flex justify-between items-center text-xs font-mono tracking-wider text-zinc-400 uppercase">
-              <span className="text-[#38bdf8]/70">Capital Recovered</span>
-              <span className="font-sans font-medium text-[#f8fafc]">100% + Aave Yield</span>
+              <span className="text-fundra-accent/70">Capital Recovered</span>
+              <span className="font-sans font-medium text-fundra-text">100% + Aave Yield</span>
             </div>
           </ScrollReveal>
         </div>

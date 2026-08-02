@@ -24,7 +24,11 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
       // Check which wallet is installed in the user's browser
       if (typeof window !== "undefined" && window.ethereum) {
         setHasMetaMask(!!window.ethereum.isMetaMask);
-        setHasBitget(!!(window as any).bitkeep || !!window.ethereum.isMetaMask);
+        setHasBitget(
+          !!(window as any).bitkeep?.ethereum ||
+          !!window.ethereum.isBitKeep ||
+          !!(window.ethereum as any).isBitget
+        );
       }
     } else {
       setAnimate(false);

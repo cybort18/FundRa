@@ -7,14 +7,14 @@ export function Hero() {
       
       {/* Title Reveal */}
       <ScrollReveal delay={300}>
-        <h1 className="font-cormorant text-[4.5rem] sm:text-[6.5rem] md:text-[8rem] lg:text-[10rem] font-normal leading-[1.0] text-center tracking-wide text-[#dbeafe] drop-shadow-sm mb-6 uppercase">
+        <h1 className="font-cormorant text-[4.5rem] sm:text-[6.5rem] md:text-[8rem] lg:text-[10rem] font-normal leading-[1.0] text-center tracking-wide text-fundra-text drop-shadow-sm mb-6 uppercase">
           FUNDRA
         </h1>
       </ScrollReveal>
       
       {/* Subtitle Reveal */}
       <ScrollReveal delay={500} className="w-full flex justify-center">
-        <p className="text-lg md:text-xl text-[#94a3b8] font-light tracking-wide text-center max-w-3xl leading-relaxed">
+        <p className="text-lg md:text-xl text-fundra-muted font-light tracking-wide text-center max-w-3xl leading-relaxed">
           Sovereign Crowdfunding Infrastructure. Yield-Generating ERC-4626 Vaults. <br className="hidden md:block"/>
           Milestone-Based Governance for the Decentralized Creator Economy.
         </p>

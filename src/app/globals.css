@@ -5,16 +5,18 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ── FundRa Brand Design Tokens ── */
+  --color-fundra-bg: #030014;
+  --color-fundra-accent: #38bdf8;
+  --color-fundra-text: #f8fafc;
+  --color-fundra-muted: #94a3b8;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
-  --font-playfair: var(--font-playfair);
-  --font-cinzel: var(--font-cinzel);
   --font-cormorant: var(--font-cormorant);
-  --font-space-grotesk: var(--font-space-grotesk);
-  --font-syncopate: var(--font-syncopate);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

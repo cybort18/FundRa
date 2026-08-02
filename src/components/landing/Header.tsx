@@ -51,7 +51,7 @@ export function Header() {
 
         {/* Center: Abstract Geometric Logo */}
         <div className="flex flex-col items-center justify-center">
-          <div className="relative flex items-center justify-center w-12 h-12 text-[#e2e8f0] hover:text-white transition-colors duration-500 cursor-pointer group">
+          <div className="relative flex items-center justify-center w-12 h-12 text-fundra-text hover:text-white transition-colors duration-500 cursor-pointer group">
             <div className="absolute rotate-45 border border-current w-6 h-6 group-hover:rotate-90 transition-transform duration-700 ease-in-out" />
             <div className="absolute border border-current w-6 h-6 group-hover:rotate-180 transition-transform duration-700 ease-in-out" />
             <Sparkles className="w-3 h-3 absolute z-10 text-white" />
@@ -69,7 +69,7 @@ export function Header() {
               isConnected
                 ? isHoveredDisconnect
                   ? "bg-red-950/40 border-red-500/30 text-red-400 hover:bg-red-900/40 cursor-pointer"
-                  : "bg-emerald-950/20 border-emerald-500/20 text-[#f8fafc]"
+                  : "bg-emerald-950/20 border-emerald-500/20 text-fundra-text"
                 : "bg-[#0f2147] hover:bg-[#163066] border-white/5 text-white hover:shadow-[0_0_20px_rgba(22,48,102,0.3)] cursor-pointer"
             }`}
           >
