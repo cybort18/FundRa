@@ -1,6 +1,9 @@
+"use client";
+
 import { ArrowDown } from "lucide-react";
 import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
+import { Guarantees } from "@/components/landing/Guarantees";
 import { About } from "@/components/landing/About";
 import { RealityCheck } from "@/components/landing/RealityCheck";
 import { Pillars } from "@/components/landing/Pillars";
@@ -36,6 +39,9 @@ export default function Home() {
       {/* --- SCROLL INDICATOR --- */}
       <ScrollIndicator />
 
+      {/* --- GUARANTEES MANIFESTO SECTION --- */}
+      <Guarantees />
+
       {/* --- ABOUT SECTION --- */}
       <About />
 
@@ -53,10 +59,16 @@ export default function Home() {
 function ScrollIndicator() {
   return (
     <div
+      onClick={() => document.getElementById('guarantees')?.scrollIntoView({ behavior: 'smooth' })}
       className="relative z-10 flex flex-col items-center pb-24 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
       role="button"
       tabIndex={0}
-      aria-label="Scroll to About section"
+      aria-label="Scroll to Guarantees section"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          document.getElementById('guarantees')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }}
     >
       <span className="text-xs uppercase tracking-[0.3em] mb-4 text-fundra-muted">Scroll Down</span>
       <ArrowDown className="w-4 h-4 text-fundra-muted animate-bounce" />
