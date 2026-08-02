@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, HelpCircle } from "lucide-react";
+import { X, HelpCircle, Loader2 } from "lucide-react";
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -15,6 +15,21 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
   const [animate, setAnimate] = useState(false);
   const [hasMetaMask, setHasMetaMask] = useState(false);
   const [hasBitget, setHasBitget] = useState(false);
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -58,22 +73,33 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
       />
 
       {/* Redesigned Premium Wallet Modal Container */}
-      <div className={`relative w-full max-w-2xl bg-[#070514]/90 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 md:p-10 shadow-[0_0_50px_rgba(56,189,248,0.05)] flex flex-col items-center transition-all duration-300 transform ${
+      <div className={`relative w-full max-w-2xl bg-[#070514]/90 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 md:p-10 shadow-[0_0_50px_rgba(56,189,248,0.05)] flex flex-col items-center transition-all duration-300 transform overflow-hidden ${
         animate ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
       }`}>
         
+        {/* Connection Loading Overlay (Fix #7) */}
+        {isConnecting && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-30 transition-all duration-300">
+            <Loader2 className="w-10 h-10 text-fundra-accent animate-spin mb-4" />
+            <p className="text-fundra-text text-sm font-light tracking-wider animate-pulse">
+              Requesting authorization from wallet extension...
+            </p>
+          </div>
+        )}
+
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+          aria-label="Close modal"
+          className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer z-10"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Header Block */}
         <div className="text-center mb-10">
-          <h3 className="text-2xl font-cormorant text-[#f8fafc] font-medium tracking-wide">Select Wallet</h3>
-          <p className="text-zinc-500 text-xs mt-2 max-w-[320px] mx-auto leading-relaxed font-sans">
+          <h3 className="text-2xl font-cormorant text-fundra-text font-medium tracking-wide">Select Wallet</h3>
+          <p className="text-fundra-muted text-xs mt-2 max-w-[320px] mx-auto leading-relaxed font-sans">
             Connect MetaMask or Bitget Wallet to interact with the FundRa protocol.
           </p>
         </div>
@@ -84,7 +110,15 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
           {/* Card 1: MetaMask */}
           <div
             onClick={() => onConnect("metamask")}
-            className="flex flex-col items-center justify-between text-center p-8 bg-white/[0.02] border border-white/5 hover:border-[#e2761b]/40 rounded-2xl transition-all duration-500 hover:bg-white/[0.04] group cursor-pointer relative hover:shadow-[0_0_35px_rgba(226,118,27,0.08)]"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                onConnect("metamask");
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Connect with MetaMask"
+            className="flex flex-col items-center justify-between text-center p-8 bg-white/[0.02] border border-white/5 hover:border-[#e2761b]/40 rounded-2xl transition-all duration-500 hover:bg-white/[0.04] group cursor-pointer relative hover:shadow-[0_0_35px_rgba(226,118,27,0.08)] outline-none focus-visible:ring-1 focus-visible:ring-[#e2761b]"
           >
             {/* Status Badge */}
             <div className="absolute top-4 right-4">
@@ -121,7 +155,15 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
           {/* Card 2: Bitget Wallet */}
           <div
             onClick={() => onConnect("bitget")}
-            className="flex flex-col items-center justify-between text-center p-8 bg-white/[0.02] border border-white/5 hover:border-[#00f0ff]/40 rounded-2xl transition-all duration-500 hover:bg-white/[0.04] group cursor-pointer relative hover:shadow-[0_0_35px_rgba(0,240,255,0.08)]"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                onConnect("bitget");
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Connect with Bitget Wallet"
+            className="flex flex-col items-center justify-between text-center p-8 bg-white/[0.02] border border-white/5 hover:border-[#00f0ff]/40 rounded-2xl transition-all duration-500 hover:bg-white/[0.04] group cursor-pointer relative hover:shadow-[0_0_35px_rgba(0,240,255,0.08)] outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
           >
             {/* Status Badge */}
             <div className="absolute top-4 right-4">
@@ -169,7 +211,7 @@ export function WalletModal({ isOpen, onClose, onConnect, isConnecting, isConnec
               href="https://ethereum.org/en/wallets/" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-[#38bdf8] hover:text-[#00f0ff] hover:underline font-semibold transition-colors"
+              className="text-fundra-accent hover:text-[#00f0ff] hover:underline font-semibold transition-colors"
             >
               Learn more
             </a>

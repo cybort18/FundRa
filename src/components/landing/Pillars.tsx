@@ -57,7 +57,17 @@ export function Pillars() {
               key={idx}
               onMouseEnter={() => setHoveredIndex(idx)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className={`border-b border-white/5 py-12 md:py-16 flex flex-col md:grid md:grid-cols-12 gap-6 md:gap-8 items-start md:items-center transition-all duration-500 ease-out cursor-pointer origin-left ${opacityClass}`}
+              onFocus={() => setHoveredIndex(idx)}
+              onBlur={() => setHoveredIndex(null)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  // Currently static informational, but handles standard click behavior safely
+                  e.preventDefault();
+                }
+              }}
+              className={`border-b border-white/5 py-12 md:py-16 flex flex-col md:grid md:grid-cols-12 gap-6 md:gap-8 items-start md:items-center transition-all duration-500 ease-out cursor-pointer origin-left outline-none focus-visible:ring-1 focus-visible:ring-fundra-accent/40 px-3 rounded-xl ${opacityClass}`}
             >
               {/* Number Column */}
               <div className="md:col-span-2 font-mono text-2xl md:text-3xl text-zinc-500 tracking-wider">

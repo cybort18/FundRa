@@ -55,11 +55,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (!provider) {
-        setError("MetaMask is not installed.");
+        setError("MetaMask was not found. Opening MetaMask download page...");
         setIsConnecting(false);
-        if (confirm("MetaMask was not found. Would you like to install it?")) {
-          window.open("https://metamask.io/download/", "_blank");
-        }
+        window.open("https://metamask.io/download/", "_blank");
         return;
       }
     } else if (type === "bitget") {
@@ -74,11 +72,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!provider) {
-        setError("Bitget Wallet is not installed.");
+        setError("Bitget Wallet was not found. Opening download page...");
         setIsConnecting(false);
-        if (confirm("Bitget Wallet was not found. Would you like to install it?")) {
-          window.open("https://web3.bitget.com/en/download", "_blank");
-        }
+        window.open("https://web3.bitget.com/en/download", "_blank");
         return;
       }
     }

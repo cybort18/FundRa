@@ -22,8 +22,17 @@ export function Hero() {
 
       {/* CTA Buttons Reveal */}
       <ScrollReveal delay={700}>
-        <div className="mt-12 flex gap-6">
-          <Button variant="outline" className="rounded-full bg-white/5 border-white/10 hover:bg-white/10 text-white backdrop-blur-md px-8">
+        <div className="mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+          <Button 
+            onClick={() => document.getElementById("reality-check")?.scrollIntoView({ behavior: "smooth" })}
+            className="rounded-full bg-fundra-accent text-fundra-bg hover:bg-[#00f0ff] font-semibold px-8 cursor-pointer shadow-[0_0_20px_rgba(56,189,248,0.2)] hover:shadow-[0_0_25px_rgba(56,189,248,0.4)] transition-all duration-300 active:scale-95 text-xs tracking-wider uppercase font-sans py-6"
+          >
+            Explore Protocol
+          </Button>
+          <Button 
+            variant="outline" 
+            className="rounded-full bg-white/5 border-white/10 hover:bg-white/10 text-white backdrop-blur-md px-8 cursor-pointer active:scale-95 text-xs tracking-wider uppercase font-sans py-6"
+          >
             Launch Project
           </Button>
         </div>

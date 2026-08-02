@@ -23,8 +23,22 @@ import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvide
 import { WalletProvider } from "@/context/WalletContext";
 
 export const metadata: Metadata = {
-  title: "FundRa | Crypto-Native Crowdfunding",
-  description: "FundRa Protocol V2 - The First Crypto-Native Crowdfunding Launchpad",
+  title: "FundRa | Crypto-Native Crowdfunding Launchpad Protocol",
+  description: "FundRa Protocol V2 - Milestone-governed crowdfunding launchpad replacing blind trust with non-custodial yield vaults on Ethereum.",
+  keywords: ["crypto", "crowdfunding", "launchpad", "smart-contract", "web3", "escrow", "ERC-4626", "Aave", "non-custodial", "milestone-governed", "blockchain"],
+  openGraph: {
+    title: "FundRa | Crypto-Native Crowdfunding Launchpad Protocol",
+    description: "Milestone-governed crowdfunding launchpad replacing blind trust with non-custodial yield vaults.",
+    url: "https://fundra.finance",
+    siteName: "FundRa",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FundRa | Crypto-Native Crowdfunding",
+    description: "Milestone-governed crowdfunding launchpad replacing blind trust with non-custodial yield vaults.",
+  },
 };
 
 export default function RootLayout({
