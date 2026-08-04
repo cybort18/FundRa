@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useWallet } from "@/context/WalletContext";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import { WalletModal } from "@/components/ui/WalletModal";
 
 export function Gateway() {
+  const router = useRouter();
   const { isConnected, connectWallet, isConnecting } = useWallet();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -14,8 +16,7 @@ export function Gateway() {
     if (!isConnected) {
       setIsModalOpen(true);
     } else {
-      // When connected, notify or transition to feature page when ready
-      alert("Connected! Redirecting to FundRa Main Protocol App...");
+      router.push("/app");
     }
   };
 

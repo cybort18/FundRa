@@ -1,7 +1,12 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function Hero() {
+  const router = useRouter();
+
   return (
     <div className="relative z-10 min-h-[calc(100vh-180px)] flex flex-col items-center justify-center px-4 w-full">
       
@@ -31,6 +36,7 @@ export function Hero() {
           </Button>
           <Button 
             variant="outline" 
+            onClick={() => router.push("/app")}
             className="rounded-full bg-white/5 border-white/10 hover:bg-white/10 text-white backdrop-blur-md px-8 cursor-pointer active:scale-95 text-xs tracking-wider uppercase font-sans py-6"
           >
             Launch Project
@@ -41,3 +47,4 @@ export function Hero() {
     </div>
   );
 }
+
