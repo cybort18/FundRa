@@ -7,10 +7,12 @@ import { Guarantees } from "@/components/landing/Guarantees";
 import { About } from "@/components/landing/About";
 import { RealityCheck } from "@/components/landing/RealityCheck";
 import { Pillars } from "@/components/landing/Pillars";
+import { Gateway } from "@/components/landing/Gateway";
+import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen flex flex-col font-sans">
+    <main className="relative min-h-screen flex flex-col font-sans overflow-hidden">
       
       {/* --- VIBRANT AURA GRAINY GRADIENT BACKGROUND --- */}
       {/* Base deep background */}
@@ -50,6 +52,12 @@ export default function Home() {
 
       {/* --- PILLARS SECTION --- */}
       <Pillars />
+
+      {/* --- GATEWAY (FINAL CTA) SECTION --- */}
+      <Gateway />
+
+      {/* --- FOOTER --- */}
+      <Footer />
 
     </main>
   );
