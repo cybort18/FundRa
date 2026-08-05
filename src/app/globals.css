@@ -175,3 +175,8 @@ html.lenis body {
 .lenis.lenis-stopped {
   overflow: hidden;
 }
+
+/* DApp Form Input Utility */
+.input-field {
+  @apply w-full bg-[#18181b] border border-[#27272a] rounded-md px-3 py-2 text-sm text-white placeholder:text-[#3f3f46] focus:outline-none focus:border-[#3f3f46] transition-colors;
+}

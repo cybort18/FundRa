@@ -1,142 +1,108 @@
 "use client";
 
-import {
-  TrendingUp,
-  Wallet,
-  Zap,
-  ArrowDownRight,
-  ArrowUpRight,
-  LogOut,
-} from "lucide-react";
-import { MOCK_PORTFOLIO, formatCurrency, formatNumber } from "@/data/mockProjects";
+import { useState, useEffect } from "react";
+import { Wallet, LogOut } from "lucide-react";
+import { useWallet } from "@/context/WalletContext";
+import type { DbDeposit } from "@/lib/db/engine";
+
+function formatCurrency(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
+  return `$${value.toFixed(2)}`;
+}
 
 export function PortfolioDashboard() {
-  const totalDeposited = MOCK_PORTFOLIO.reduce((sum, p) => sum + p.depositedAmount, 0);
-  const totalYield = MOCK_PORTFOLIO.reduce((sum, p) => sum + p.currentYield, 0);
-  const avgApy = MOCK_PORTFOLIO.length > 0
-    ? MOCK_PORTFOLIO.reduce((sum, p) => sum + p.apy, 0) / MOCK_PORTFOLIO.length
+  const { address } = useWallet();
+  const [deposits, setDeposits] = useState<DbDeposit[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!address) {
+      setDeposits([]);
+      setLoading(false);
+      return;
+    }
+
+    fetch(`/api/vaults/deposit?wallet=${address}`)
+      .then((res) => res.json())
+      .then((data) => setDeposits(data.deposits || []))
+      .catch(() => setDeposits([]))
+      .finally(() => setLoading(false));
+  }, [address]);
+
+  const totalDeposited = deposits.reduce((sum, d) => sum + d.amount, 0);
+  const avgApy = deposits.length > 0
+    ? deposits.reduce((sum, d) => sum + d.apy, 0) / deposits.length
     : 0;
 
+  if (!address) {
+    return (
+      <div className="py-20 text-center">
+        <Wallet className="w-8 h-8 text-[#27272a] mx-auto mb-3" />
+        <p className="text-sm text-[#52525b]">Connect your wallet to view your portfolio.</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <div className="py-20 text-center text-sm text-[#52525b]">Loading...</div>;
+  }
+
   return (
-    <div className="space-y-8">
-      {/* Portfolio Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-fundra-accent/8 to-transparent border border-fundra-accent/15">
-          <div className="flex items-center gap-2 mb-3">
-            <Wallet className="w-5 h-5 text-fundra-accent" />
-            <span className="text-xs text-fundra-muted uppercase tracking-wider">Total Deposited</span>
-          </div>
-          <p className="text-3xl font-mono font-bold text-fundra-text">
-            {formatCurrency(totalDeposited)}
-          </p>
-          <p className="text-xs text-fundra-muted mt-1">Principal • 100% Protected</p>
+    <div className="space-y-6">
+      {/* Summary */}
+      <div className="flex items-center gap-8 text-xs text-[#a1a1aa]">
+        <div>
+          <span className="text-[#52525b]">Deposited </span>
+          <span className="text-white font-mono">{formatCurrency(totalDeposited)}</span>
         </div>
-
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/8 to-transparent border border-emerald-500/15">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-5 h-5 text-emerald-400" />
-            <span className="text-xs text-fundra-muted uppercase tracking-wider">Total Yield Earned</span>
-          </div>
-          <p className="text-3xl font-mono font-bold text-emerald-400">
-            +{formatCurrency(totalYield)}
-          </p>
-          <p className="text-xs text-fundra-muted mt-1">From Aave V3 lending pools</p>
+        <div>
+          <span className="text-[#52525b]">Positions </span>
+          <span className="text-white font-mono">{deposits.length}</span>
         </div>
-
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/8 to-transparent border border-amber-500/15">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-5 h-5 text-amber-400" />
-            <span className="text-xs text-fundra-muted uppercase tracking-wider">Avg. APY</span>
-          </div>
-          <p className="text-3xl font-mono font-bold text-amber-400">
-            {avgApy.toFixed(2)}%
-          </p>
-          <p className="text-xs text-fundra-muted mt-1">Across all active vaults</p>
+        <div>
+          <span className="text-[#52525b]">Avg APY </span>
+          <span className="text-emerald-500 font-mono">{avgApy.toFixed(2)}%</span>
         </div>
       </div>
 
-      {/* Active Vault Positions */}
-      <div>
-        <h3 className="text-sm font-semibold text-fundra-text mb-4">Active Vault Positions</h3>
-        <div className="space-y-3">
-          {MOCK_PORTFOLIO.map((position) => (
+      {deposits.length === 0 ? (
+        <div className="py-16 text-center text-sm text-[#52525b]">
+          No active positions. Deposit into a campaign to get started.
+        </div>
+      ) : (
+        <div className="border border-[#27272a] rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-[1fr_100px_80px_80px] gap-4 px-4 py-2.5 bg-[#18181b] text-[10px] text-[#52525b] uppercase tracking-wider border-b border-[#27272a]">
+            <span>Campaign</span>
+            <span className="text-right">Deposited</span>
+            <span className="text-right">Tokens</span>
+            <span className="text-right">APY</span>
+          </div>
+
+          {/* Rows */}
+          {deposits.map((dep) => (
             <div
-              key={position.campaignId}
-              className="group p-5 rounded-2xl bg-white/[0.025] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300"
+              key={dep.id}
+              className="grid grid-cols-[1fr_100px_80px_80px] gap-4 items-center px-4 py-3 border-b border-[#27272a] last:border-b-0"
             >
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div className="min-w-0">
-                  <h4 className="text-sm font-semibold text-fundra-text truncate">
-                    {position.campaignTitle}
-                  </h4>
-                  <p className="text-xs text-fundra-muted mt-0.5">
-                    Deposited {new Date(position.depositedAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-                <span className="shrink-0 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">
-                  {position.apy}% APY
-                </span>
+              <div className="min-w-0">
+                <p className="text-sm text-white truncate">{dep.campaignId}</p>
+                <p className="text-[10px] text-[#3f3f46] mt-0.5">
+                  {new Date(dep.createdAt).toLocaleDateString()}
+                </p>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-[10px] text-fundra-muted uppercase tracking-wider mb-0.5">Principal</p>
-                  <p className="text-sm font-mono font-semibold text-fundra-text">
-                    {formatCurrency(position.depositedAmount)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-fundra-muted uppercase tracking-wider mb-0.5">Yield Accrued</p>
-                  <p className="text-sm font-mono font-semibold text-emerald-400">
-                    +${position.currentYield.toFixed(2)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-fundra-muted uppercase tracking-wider mb-0.5">Token Balance</p>
-                  <p className="text-sm font-mono font-semibold text-fundra-accent">
-                    {formatNumber(position.tokenBalance)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-fundra-muted uppercase tracking-wider mb-0.5">Token</p>
-                  <p className="text-sm font-mono font-semibold text-fundra-text">
-                    ${position.tokenTicker}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 mt-4 pt-4 border-t border-white/[0.05]">
-                <button
-                  onClick={() => alert(`Simulated: Withdrawing principal of ${formatCurrency(position.depositedAmount)} from ${position.campaignTitle} vault.`)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-fundra-muted hover:text-red-400 hover:border-red-400/20 hover:bg-red-500/5 transition-all cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  Withdraw Principal
-                </button>
-                <button
-                  onClick={() => alert(`Simulated: Claiming ${position.currentYield.toFixed(2)} USDC yield from ${position.campaignTitle}.`)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 hover:bg-emerald-500/20 transition-all cursor-pointer"
-                >
-                  <ArrowDownRight className="w-3.5 h-3.5" />
-                  Claim Yield
-                </button>
-              </div>
+              <span className="text-right text-xs font-mono text-white">
+                {formatCurrency(dep.amount)}
+              </span>
+              <span className="text-right text-xs font-mono text-[#a1a1aa]">
+                {dep.tokensReceived.toLocaleString()}
+              </span>
+              <span className="text-right text-xs font-mono text-emerald-500">
+                {dep.apy}%
+              </span>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Empty state if no positions */}
-      {MOCK_PORTFOLIO.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Wallet className="w-12 h-12 text-fundra-muted/20 mb-4" />
-          <p className="text-sm text-fundra-muted">No active vault positions.</p>
-          <p className="text-xs text-fundra-muted/60 mt-1">Explore campaigns and deposit to earn yield.</p>
         </div>
       )}
     </div>
