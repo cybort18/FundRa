@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "vote must be 'yes' or 'no'" }, { status: 400 });
   }
 
-  const result = castVote({ campaignId, milestoneId, walletAddress, vote });
+  const result = await castVote({ campaignId, milestoneId, walletAddress, vote });
 
   if (result === "duplicate") {
     return NextResponse.json(

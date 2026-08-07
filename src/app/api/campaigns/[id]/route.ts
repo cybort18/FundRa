@@ -10,7 +10,7 @@ export async function GET(
   ensureDb();
 
   const { id } = await params;
-  const campaign = getCampaignById(id);
+  const campaign = await getCampaignById(id);
 
   if (!campaign) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });

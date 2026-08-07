@@ -1,0 +1,80 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Campaign {
+  id              String         @id
+  title           String
+  creator         String
+  creatorAddress  String
+  description     String
+  longDescription String
+  category        String
+  network         String
+  tvl             Float          @default(0)
+  aaveApy         Float
+  yieldGenerated  Float          @default(0)
+  backerCount     Int            @default(0)
+  status          String         @default("active")
+  tags            String         // Comma-separated list of tags
+  targetRaise     Float
+  createdAt       DateTime       @default(now())
+  milestones      Milestone[]
+  bondingCurve    BondingCurve?
+}
+
+model Milestone {
+  id               String    @id
+  campaignId       String
+  campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  title            String
+  description      String
+  payoutPercentage Int
+  status           String    @default("upcoming") // upcoming, active, completed, rejected
+  votesFor         Int       @default(0)
+  votesAgainst     Int       @default(0)
+  quorumRequired   Int       @default(10)
+  deliverableUrl   String?
+  completedAt      DateTime?
+}
+
+model BondingCurve {
+  id           String   @id @default(uuid())
+  campaignId   String   @unique
+  campaign     Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  tokenName    String
+  tokenTicker  String
+  currentPrice Float
+  initialPrice Float
+  reserveRatio Float
+  totalSupply  Float    @default(0)
+  marketCap    Float    @default(0)
+}
+
+model Deposit {
+  id             String   @id
+  campaignId     String
+  walletAddress  String
+  amount         Float
+  tokensReceived Float
+  apy            Float
+  createdAt      DateTime @default(now())
+}
+
+model Vote {
+  id            String   @id
+  campaignId    String
+  milestoneId   String
+  walletAddress String
+  vote          String   // yes, no
+  createdAt     DateTime @default(now())
+
+  @@unique([milestoneId, walletAddress])
+}

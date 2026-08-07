@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") || undefined;
   const status = searchParams.get("status") || undefined;
 
-  const campaigns = getAllCampaigns({ category, search, status });
+  const campaigns = await getAllCampaigns({ category, search, status });
 
   return NextResponse.json({ campaigns, total: campaigns.length });
 }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const campaign = createCampaign({
+    const campaign = await createCampaign({
       title,
       creator: creator || "Anonymous",
       creatorAddress: creatorAddress || "0x0000000000000000000000000000000000000000",

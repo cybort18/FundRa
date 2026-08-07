@@ -80,22 +80,20 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Force the extension to open the account picker by requesting permissions
+      // Force account picker or connect standard standard accounts
       try {
         await provider.request({
           method: "wallet_requestPermissions",
           params: [{ eth_accounts: {} }]
         });
       } catch (permissionErr: any) {
-        // If user rejected the permission popup, throw immediately
+        // Code 4001: User rejected
         if (permissionErr.code === 4001) {
           throw permissionErr;
         }
-        // Fallback to standard request if requestPermissions is not supported by the provider
         console.warn("wallet_requestPermissions failed, falling back to eth_requestAccounts:", permissionErr);
       }
 
-      // Retrieve the selected accounts
       const accounts = await provider.request({ method: "eth_requestAccounts" });
       if (accounts && accounts.length > 0) {
         setAddress(accounts[0]);
@@ -103,7 +101,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       console.error(`${type} connection error:`, err);
       if (err.code === 4001) {
-        setError("Connection request rejected by user.");
+        setError("Connection request rejected.");
       } else {
         setError(err.message || `Failed to connect to ${type}.`);
       }
@@ -131,7 +129,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     };
 
     const handleChainChanged = () => {
-      // Refresh the page on network change as recommended by MetaMask
       window.location.reload();
     };
 

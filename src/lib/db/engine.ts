@@ -1,16 +1,13 @@
 /**
- * FundRa — File-based JSON Database Engine
+ * FundRa — Database Engine (Prisma Relational Implementation)
  *
- * Zero-dependency persistence layer.
- * Data is stored in `.fundra-data/db.json` at project root.
- * This file is automatically created on first write and
- * should be added to `.gitignore`.
+ * Provides real database persistence using Prisma.
+ * Binds SQLite locally and PostgreSQL/Supabase in production.
  */
 
-import fs from "fs";
-import path from "path";
+import { prisma } from "./prisma";
 
-// ── Types ─────────────────────────────────────────────────
+// ── Types mapping for frontend compatibility ────────────────
 
 export interface DbMilestone {
   id: string;
@@ -21,8 +18,8 @@ export interface DbMilestone {
   votesFor: number;
   votesAgainst: number;
   quorumRequired: number;
-  deliverableUrl?: string;
-  completedAt?: string;
+  deliverableUrl?: string | null;
+  completedAt?: string | null;
 }
 
 export interface DbBondingCurve {
@@ -75,22 +72,68 @@ export interface DbVote {
   createdAt: string;
 }
 
-export interface Database {
-  campaigns: DbCampaign[];
-  deposits: DbDeposit[];
-  votes: DbVote[];
+// Helper to convert database campaign model to frontend format
+function mapCampaign(c: any): DbCampaign {
+  return {
+    id: c.id,
+    title: c.title,
+    creator: c.creator,
+    creatorAddress: c.creatorAddress,
+    description: c.description,
+    longDescription: c.longDescription,
+    category: c.category,
+    network: c.network,
+    tvl: c.tvl,
+    aaveApy: c.aaveApy,
+    yieldGenerated: c.yieldGenerated,
+    backerCount: c.backerCount,
+    status: c.status as any,
+    tags: c.tags ? c.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [],
+    targetRaise: c.targetRaise,
+    createdAt: c.createdAt.toISOString(),
+    milestones: (c.milestones || []).map((m: any) => ({
+      id: m.id,
+      title: m.title,
+      description: m.description,
+      payoutPercentage: m.payoutPercentage,
+      status: m.status as any,
+      votesFor: m.votesFor,
+      votesAgainst: m.votesAgainst,
+      quorumRequired: m.quorumRequired,
+      deliverableUrl: m.deliverableUrl,
+      completedAt: m.completedAt ? m.completedAt.toISOString() : null,
+    })),
+    bondingCurve: c.bondingCurve
+      ? {
+          tokenName: c.bondingCurve.tokenName,
+          tokenTicker: c.bondingCurve.tokenTicker,
+          currentPrice: c.bondingCurve.currentPrice,
+          initialPrice: c.bondingCurve.initialPrice,
+          reserveRatio: c.bondingCurve.reserveRatio,
+          totalSupply: c.bondingCurve.totalSupply,
+          marketCap: c.bondingCurve.marketCap,
+        }
+      : {
+          tokenName: "",
+          tokenTicker: "",
+          currentPrice: 0,
+          initialPrice: 0,
+          reserveRatio: 0.33,
+          totalSupply: 0,
+          marketCap: 0,
+        },
+  };
 }
 
-// ── Config ────────────────────────────────────────────────
+// ── Core Read/Write compatibility placeholders ─────────────
 
-const DATA_DIR = path.join(process.cwd(), ".fundra-data");
-const DB_FILE = path.join(DATA_DIR, "db.json");
+export function readDb() {
+  return { campaigns: [], deposits: [], votes: [] };
+}
 
-const EMPTY_DB: Database = {
-  campaigns: [],
-  deposits: [],
-  votes: [],
-};
+export function writeDb(db: any) {
+  // No-op in Prisma
+}
 
 // ── ID Generation ─────────────────────────────────────────
 
@@ -103,71 +146,61 @@ function generateId(prefix: string): string {
   return `${prefix}_${id}`;
 }
 
-// ── Core Read/Write ───────────────────────────────────────
-
-function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-}
-
-export function readDb(): Database {
-  ensureDataDir();
-  if (!fs.existsSync(DB_FILE)) {
-    writeDb(EMPTY_DB);
-    return { ...EMPTY_DB };
-  }
-  try {
-    const raw = fs.readFileSync(DB_FILE, "utf-8");
-    return JSON.parse(raw) as Database;
-  } catch {
-    return { ...EMPTY_DB };
-  }
-}
-
-export function writeDb(db: Database): void {
-  ensureDataDir();
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), "utf-8");
-}
-
 // ── Campaign Operations ───────────────────────────────────
 
-export function getAllCampaigns(filters?: {
+export async function getAllCampaigns(filters?: {
   category?: string;
   search?: string;
   status?: string;
-}): DbCampaign[] {
-  const db = readDb();
-  let campaigns = db.campaigns;
+}): Promise<DbCampaign[]> {
+  const whereClause: any = {};
 
   if (filters?.category && filters.category !== "All") {
-    campaigns = campaigns.filter((c) => c.category === filters.category);
+    whereClause.category = filters.category;
   }
 
   if (filters?.status) {
-    campaigns = campaigns.filter((c) => c.status === filters.status);
+    whereClause.status = filters.status;
   }
 
   if (filters?.search) {
-    const q = filters.search.toLowerCase();
-    campaigns = campaigns.filter(
-      (c) =>
-        c.title.toLowerCase().includes(q) ||
-        c.creator.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        c.tags.some((t) => t.toLowerCase().includes(q))
-    );
+    const searchString = filters.search.toLowerCase();
+    whereClause.OR = [
+      { title: { contains: searchString } },
+      { creator: { contains: searchString } },
+      { description: { contains: searchString } },
+      { tags: { contains: searchString } },
+    ];
   }
 
-  return campaigns;
+  const campaigns = await prisma.campaign.findMany({
+    where: whereClause,
+    include: {
+      milestones: true,
+      bondingCurve: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return campaigns.map(mapCampaign);
 }
 
-export function getCampaignById(id: string): DbCampaign | undefined {
-  const db = readDb();
-  return db.campaigns.find((c) => c.id === id);
+export async function getCampaignById(id: string): Promise<DbCampaign | undefined> {
+  const campaign = await prisma.campaign.findUnique({
+    where: { id },
+    include: {
+      milestones: true,
+      bondingCurve: true,
+    },
+  });
+
+  if (!campaign) return undefined;
+  return mapCampaign(campaign);
 }
 
-export function createCampaign(input: {
+export async function createCampaign(input: {
   title: string;
   creator: string;
   creatorAddress: string;
@@ -184,177 +217,257 @@ export function createCampaign(input: {
     initialPrice: number;
     reserveRatio: number;
   };
-}): DbCampaign {
-  const db = readDb();
+}): Promise<DbCampaign> {
   const id = generateId("camp");
   const apy = +(3.5 + Math.random() * 2.5).toFixed(2); // 3.5–6.0%
 
-  const milestones: DbMilestone[] = input.milestones.map((m, i) => ({
-    id: `ms_${id.slice(5, 10)}_${i}`,
-    title: m.title,
-    description: m.description,
-    payoutPercentage: m.payoutPercentage,
-    status: i === 0 ? "active" : "upcoming",
-    votesFor: 0,
-    votesAgainst: 0,
-    quorumRequired: 10, // initial low quorum, scales with backers
-  }));
+  const tagsString = input.tags ? input.tags.join(",") : "";
 
-  const campaign: DbCampaign = {
-    id,
-    title: input.title,
-    creator: input.creator,
-    creatorAddress: input.creatorAddress,
-    description: input.description,
-    longDescription: input.longDescription || input.description,
-    category: input.category,
-    network: input.network || "ethereum",
-    tvl: 0,
-    aaveApy: apy,
-    yieldGenerated: 0,
-    backerCount: 0,
-    status: "active",
-    tags: input.tags || [],
-    targetRaise: input.targetRaise || 0,
-    milestones,
-    bondingCurve: {
-      tokenName: input.bondingCurve.tokenName,
-      tokenTicker: input.bondingCurve.tokenTicker,
-      currentPrice: input.bondingCurve.initialPrice,
-      initialPrice: input.bondingCurve.initialPrice,
-      reserveRatio: input.bondingCurve.reserveRatio,
-      totalSupply: 0,
-      marketCap: 0,
-    },
-    createdAt: new Date().toISOString(),
-  };
+  const createdCampaign = await prisma.$transaction(async (tx) => {
+    await tx.campaign.create({
+      data: {
+        id,
+        title: input.title,
+        creator: input.creator,
+        creatorAddress: input.creatorAddress,
+        description: input.description,
+        longDescription: input.longDescription || input.description,
+        category: input.category,
+        network: input.network || "ethereum",
+        tvl: 0,
+        aaveApy: apy,
+        yieldGenerated: 0,
+        backerCount: 0,
+        status: "active",
+        tags: tagsString,
+        targetRaise: input.targetRaise || 0,
+      },
+    });
 
-  db.campaigns.push(campaign);
-  writeDb(db);
-  return campaign;
+    // Create bonding curve
+    await tx.bondingCurve.create({
+      data: {
+        campaignId: id,
+        tokenName: input.bondingCurve.tokenName,
+        tokenTicker: input.bondingCurve.tokenTicker,
+        currentPrice: input.bondingCurve.initialPrice,
+        initialPrice: input.bondingCurve.initialPrice,
+        reserveRatio: input.bondingCurve.reserveRatio,
+        totalSupply: 0,
+        marketCap: 0,
+      },
+    });
+
+    // Create milestones
+    for (let i = 0; i < input.milestones.length; i++) {
+      const m = input.milestones[i];
+      await tx.milestone.create({
+        data: {
+          id: `ms_${id.slice(5, 10)}_${i}`,
+          campaignId: id,
+          title: m.title,
+          description: m.description,
+          payoutPercentage: m.payoutPercentage,
+          status: i === 0 ? "active" : "upcoming",
+          votesFor: 0,
+          votesAgainst: 0,
+          quorumRequired: 10,
+        },
+      });
+    }
+
+    return tx.campaign.findUnique({
+      where: { id },
+      include: {
+        milestones: true,
+        bondingCurve: true,
+      },
+    });
+  });
+
+  return mapCampaign(createdCampaign);
 }
 
 // ── Deposit Operations ────────────────────────────────────
 
-export function createDeposit(input: {
+export async function createDeposit(input: {
   campaignId: string;
   walletAddress: string;
   amount: number;
-}): { deposit: DbDeposit; updatedCampaign: Pick<DbCampaign, "tvl" | "backerCount"> } | null {
-  const db = readDb();
-  const campaignIdx = db.campaigns.findIndex((c) => c.id === input.campaignId);
-  if (campaignIdx === -1) return null;
+}): Promise<{ deposit: DbDeposit; updatedCampaign: Pick<DbCampaign, "tvl" | "backerCount"> } | null> {
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: input.campaignId },
+    include: { bondingCurve: true },
+  });
 
-  const campaign = db.campaigns[campaignIdx];
+  if (!campaign || !campaign.bondingCurve) return null;
+
   const tokensReceived = Math.floor(input.amount / campaign.bondingCurve.currentPrice);
+  const depositId = generateId("dep");
 
-  const deposit: DbDeposit = {
-    id: generateId("dep"),
-    campaignId: input.campaignId,
-    walletAddress: input.walletAddress,
-    amount: input.amount,
-    tokensReceived,
-    apy: campaign.aaveApy,
-    createdAt: new Date().toISOString(),
-  };
+  const result = await prisma.$transaction(async (tx) => {
+    // Create deposit
+    const deposit = await tx.deposit.create({
+      data: {
+        id: depositId,
+        campaignId: input.campaignId,
+        walletAddress: input.walletAddress,
+        amount: input.amount,
+        tokensReceived,
+        apy: campaign.aaveApy,
+      },
+    });
 
-  db.deposits.push(deposit);
+    // Update bonding curve
+    const newTotalSupply = campaign.bondingCurve!.totalSupply + tokensReceived;
+    // Simulate price increase on bonding curve
+    let newPrice =
+      campaign.bondingCurve!.initialPrice *
+      Math.pow(
+        (newTotalSupply + 1) / 1000,
+        1 / campaign.bondingCurve!.reserveRatio
+      );
+    newPrice = +newPrice.toFixed(4);
 
-  // Update campaign stats
-  campaign.tvl += input.amount;
-  campaign.bondingCurve.totalSupply += tokensReceived;
-  campaign.bondingCurve.marketCap =
-    campaign.bondingCurve.currentPrice * campaign.bondingCurve.totalSupply;
+    await tx.bondingCurve.update({
+      where: { campaignId: input.campaignId },
+      data: {
+        totalSupply: newTotalSupply,
+        currentPrice: newPrice,
+        marketCap: newPrice * newTotalSupply,
+      },
+    });
 
-  // Recalculate unique backers
-  const uniqueBackers = new Set(
-    db.deposits
-      .filter((d) => d.campaignId === input.campaignId)
-      .map((d) => d.walletAddress)
-  );
-  campaign.backerCount = uniqueBackers.size;
+    // Recalculate unique backers count
+    const deposits = await tx.deposit.findMany({
+      where: { campaignId: input.campaignId },
+      select: { walletAddress: true },
+    });
+    const uniqueBackers = new Set(deposits.map((d) => d.walletAddress.toLowerCase()));
 
-  // Simulate price increase on bonding curve (simplified)
-  campaign.bondingCurve.currentPrice =
-    campaign.bondingCurve.initialPrice *
-    Math.pow(
-      (campaign.bondingCurve.totalSupply + 1) / 1000,
-      1 / campaign.bondingCurve.reserveRatio
-    );
-  campaign.bondingCurve.currentPrice = +campaign.bondingCurve.currentPrice.toFixed(4);
+    // Update campaign
+    const updatedCampaign = await tx.campaign.update({
+      where: { id: input.campaignId },
+      data: {
+        tvl: { increment: input.amount },
+        backerCount: uniqueBackers.size,
+      },
+    });
 
-  // Update quorum based on backer count
-  for (const ms of campaign.milestones) {
-    ms.quorumRequired = Math.max(10, Math.floor(campaign.backerCount * 0.5));
-  }
+    // Update milestones quorum
+    const newQuorum = Math.max(10, Math.floor(uniqueBackers.size * 0.5));
+    await tx.milestone.updateMany({
+      where: { campaignId: input.campaignId },
+      data: { quorumRequired: newQuorum },
+    });
 
-  db.campaigns[campaignIdx] = campaign;
-  writeDb(db);
+    return {
+      deposit: {
+        id: deposit.id,
+        campaignId: deposit.campaignId,
+        walletAddress: deposit.walletAddress,
+        amount: deposit.amount,
+        tokensReceived: deposit.tokensReceived,
+        apy: deposit.apy,
+        createdAt: deposit.createdAt.toISOString(),
+      },
+      updatedCampaign: {
+        tvl: updatedCampaign.tvl,
+        backerCount: updatedCampaign.backerCount,
+      },
+    };
+  });
 
-  return {
-    deposit,
-    updatedCampaign: { tvl: campaign.tvl, backerCount: campaign.backerCount },
-  };
+  return result;
 }
 
-export function getDepositsByWallet(walletAddress: string): DbDeposit[] {
-  const db = readDb();
-  return db.deposits.filter((d) => d.walletAddress.toLowerCase() === walletAddress.toLowerCase());
+export async function getDepositsByWallet(walletAddress: string): Promise<DbDeposit[]> {
+  const deposits = await prisma.deposit.findMany({
+    where: {
+      walletAddress: {
+        equals: walletAddress,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return deposits.map((d) => ({
+    id: d.id,
+    campaignId: d.campaignId,
+    walletAddress: d.walletAddress,
+    amount: d.amount,
+    tokensReceived: d.tokensReceived,
+    apy: d.apy,
+    createdAt: d.createdAt.toISOString(),
+  }));
 }
 
 // ── Governance Operations ─────────────────────────────────
 
-export function castVote(input: {
+export async function castVote(input: {
   campaignId: string;
   milestoneId: string;
   walletAddress: string;
   vote: "yes" | "no";
-}): { vote: DbVote; updatedMilestone: Pick<DbMilestone, "votesFor" | "votesAgainst"> } | null | "duplicate" {
-  const db = readDb();
-
+}): Promise<{ vote: DbVote; updatedMilestone: Pick<DbMilestone, "votesFor" | "votesAgainst"> } | null | "duplicate"> {
   // Check for duplicate vote
-  const existing = db.votes.find(
-    (v) =>
-      v.milestoneId === input.milestoneId &&
-      v.walletAddress.toLowerCase() === input.walletAddress.toLowerCase()
-  );
+  const existing = await prisma.vote.findUnique({
+    where: {
+      milestoneId_walletAddress: {
+        milestoneId: input.milestoneId,
+        walletAddress: input.walletAddress.toLowerCase(),
+      },
+    },
+  });
+
   if (existing) return "duplicate";
 
-  // Find campaign and milestone
-  const campaignIdx = db.campaigns.findIndex((c) => c.id === input.campaignId);
-  if (campaignIdx === -1) return null;
+  const milestone = await prisma.milestone.findFirst({
+    where: { id: input.milestoneId, campaignId: input.campaignId },
+  });
 
-  const campaign = db.campaigns[campaignIdx];
-  const milestoneIdx = campaign.milestones.findIndex((m) => m.id === input.milestoneId);
-  if (milestoneIdx === -1) return null;
+  if (!milestone || milestone.status !== "active") return null;
 
-  const milestone = campaign.milestones[milestoneIdx];
-  if (milestone.status !== "active") return null;
+  const voteId = generateId("vote");
 
-  const vote: DbVote = {
-    id: generateId("vote"),
-    campaignId: input.campaignId,
-    milestoneId: input.milestoneId,
-    walletAddress: input.walletAddress,
-    vote: input.vote,
-    createdAt: new Date().toISOString(),
-  };
+  const result = await prisma.$transaction(async (tx) => {
+    // Record vote
+    const vote = await tx.vote.create({
+      data: {
+        id: voteId,
+        campaignId: input.campaignId,
+        milestoneId: input.milestoneId,
+        walletAddress: input.walletAddress.toLowerCase(),
+        vote: input.vote,
+      },
+    });
 
-  db.votes.push(vote);
+    // Update milestone vote counts
+    const updatedMilestone = await tx.milestone.update({
+      where: { id: input.milestoneId },
+      data: {
+        votesFor: input.vote === "yes" ? { increment: 1 } : undefined,
+        votesAgainst: input.vote === "no" ? { increment: 1 } : undefined,
+      },
+    });
 
-  // Update milestone vote counts
-  if (input.vote === "yes") {
-    milestone.votesFor += 1;
-  } else {
-    milestone.votesAgainst += 1;
-  }
+    return {
+      vote: {
+        id: vote.id,
+        campaignId: vote.campaignId,
+        milestoneId: vote.milestoneId,
+        walletAddress: vote.walletAddress,
+        vote: vote.vote as any,
+        createdAt: vote.createdAt.toISOString(),
+      },
+      updatedMilestone: {
+        votesFor: updatedMilestone.votesFor,
+        votesAgainst: updatedMilestone.votesAgainst,
+      },
+    };
+  });
 
-  campaign.milestones[milestoneIdx] = milestone;
-  db.campaigns[campaignIdx] = campaign;
-  writeDb(db);
-
-  return {
-    vote,
-    updatedMilestone: { votesFor: milestone.votesFor, votesAgainst: milestone.votesAgainst },
-  };
+  return result;
 }

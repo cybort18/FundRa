@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "wallet query parameter is required" }, { status: 400 });
   }
 
-  const deposits = getDepositsByWallet(wallet);
+  const deposits = await getDepositsByWallet(wallet);
   return NextResponse.json({ deposits });
 }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "amount must be a positive number" }, { status: 400 });
   }
 
-  const result = createDeposit({ campaignId, walletAddress, amount });
+  const result = await createDeposit({ campaignId, walletAddress, amount });
 
   if (!result) {
     return NextResponse.json({ error: "Campaign not found" }, { status: 404 });
